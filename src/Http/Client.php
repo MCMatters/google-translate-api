@@ -1,14 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\GoogleTranslateApi\Http;
 
-use GuzzleHttp\Client as GuzzleClient;
 use McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException;
+use McMatters\Ticl\Client as HttpClient;
 use Throwable;
-use const true;
-use function array_merge_recursive, json_decode;
+
+use function array_merge_recursive;
 
 /**
  * Class Client
@@ -23,7 +23,7 @@ class Client
     protected $apiKey;
 
     /**
-     * @var GuzzleClient
+     * @var \McMatters\Ticl\Client
      */
     protected $client;
 
@@ -36,9 +36,7 @@ class Client
     public function __construct(string $apiKey, string $baseUrl)
     {
         $this->apiKey = $apiKey;
-        $this->client = new GuzzleClient([
-            'base_uri' => $baseUrl,
-        ]);
+        $this->client = new HttpClient(['base_uri' => $baseUrl]);
     }
 
     /**
@@ -46,7 +44,8 @@ class Client
      * @param array $query
      *
      * @return array
-     * @throws GoogleTranslateException
+     *
+     * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      */
     public function get(string $uri, array $query = []): array
     {
@@ -58,7 +57,8 @@ class Client
      * @param array $data
      *
      * @return array
-     * @throws GoogleTranslateException
+     *
+     * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      */
     public function post(string $uri, array $data = []): array
     {
@@ -71,7 +71,8 @@ class Client
      * @param array $options
      *
      * @return array
-     * @throws GoogleTranslateException
+     *
+     * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      */
     protected function request(
         string $method,
@@ -79,13 +80,10 @@ class Client
         array $options = []
     ): array {
         try {
-            $response = $this->client->request(
-                $method,
+            return $this->client->{$method}(
                 $uri,
                 array_merge_recursive($options, ['query' => ['key' => $this->apiKey]])
-            );
-
-            return json_decode($response->getBody()->getContents(), true);
+            )->json();
         } catch (Throwable $e) {
             throw new GoogleTranslateException($e->getMessage(), $e->getCode(), $e);
         }

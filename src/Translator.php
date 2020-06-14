@@ -1,13 +1,15 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\GoogleTranslateApi;
 
 use InvalidArgumentException;
 use McMatters\GoogleTranslateApi\Http\Client;
-use const null;
+
 use function md5, preg_replace, substr;
+
+use const null;
 
 /**
  * Class Translator
@@ -16,9 +18,6 @@ use function md5, preg_replace, substr;
  */
 class Translator
 {
-    const BASE_URL = 'https://translation.googleapis.com/language/translate/';
-    const API_VERSION = 'v2';
-
     const FORMAT_HTML = 'html';
     const FORMAT_TEXT = 'text';
 
@@ -34,7 +33,10 @@ class Translator
      */
     public function __construct(string $apiKey)
     {
-        $this->httpClient = new Client($apiKey, self::BASE_URL.self::API_VERSION.'/');
+        $this->httpClient = new Client(
+            $apiKey,
+            'https://translation.googleapis.com/language/translate/v2/'
+        );
     }
 
     /**
@@ -45,6 +47,7 @@ class Translator
      * @param string|null $model
      *
      * @return array
+     *
      * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      * @throws \InvalidArgumentException
      */
@@ -76,6 +79,7 @@ class Translator
      * @param string|null $model
      *
      * @return array
+     *
      * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      * @throws \InvalidArgumentException
      */
@@ -112,7 +116,8 @@ class Translator
      * @param string $q
      *
      * @return array
-     * @throws Exceptions\GoogleTranslateException
+     *
+     * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      */
     public function detect(string $q): array
     {
@@ -126,7 +131,7 @@ class Translator
      * @param string|null $model
      *
      * @return array
-     * @throws Exceptions\GoogleTranslateException
+     * @throws \McMatters\GoogleTranslateApi\Exceptions\GoogleTranslateException
      */
     public function languages(string $target = null, string $model = null): array
     {
@@ -141,7 +146,7 @@ class Translator
     /**
      * @param string $format
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     protected function checkFormat(string $format)
     {
